@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+    
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<h1> Welcome to my WEBSITE </h1>
+</head>
+<div class="input-group mb-3">
+  <form action="/searchdata" method="GET" id="search" class="search">
+  <input type="text" name="search" class="form-control" placeholder="Search data" >
+  <button type="submit" id="searchbutton"   class="btn btn-primary">Search</button>
+  </form>  
+</div>
+
+
+
+<form action="/" method = "POST">
+  <p>name <input type = "text" name = "name" id="name" /></p>
+    <p>age <input type = "integer" name = "age" id="age" /></p>
+    <p><input type = "submit" value = "Submit" class="submit"/></p>
+ </form>
+
+<table class="person" id="person" >
+<thead> 
+  <tr>
+      <th style="
+      background-color: blanchedalmond;
+        ">name</th>
+      <th>age</th>
+      <th>Edit/Update/Delete</th>
+  </tr>
+  </thead>
+
+  </table>
+  
+  
+  <style>
+ 
+
+    body{
+      display: grid;
+    }  
+    h1 {text-align: center;}
+
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      }
+    
+    
+    th, td {
+      padding: 10px;
+    }
+    
+    
+    th {
+        background-color: #FDDF95;
+     
+      }
+    
+    
+    
+    
+     
+    form {
+        text-align: center;
+        display: inline-block;
+    }
+
+  </style>
+  
+
+
+  
+  
+<script>
+  $(document).ready(function () {
+    $(".submit").click(function (event) {
+
+      var name = $('#name').val();
+      var age = $('#age').val();
+      
+      var dict = { name: name , age:age
+      }
+   
+      $.ajax({
+          type: "POST", 
+          url: "http://localhost:5000/insertPersonData",
+          data : JSON.stringify(dict),
+          contentType: "application/json",
+      });
+
+      $.ajax({
+        method: 'GET',
+        url: "http://localhost:5000/personData",
+        success: function(response) {
+          myArray = response
+          buildTable(JSON.parse(response));
+        }
+      })
+        
+    
+      function buildTable(data) {
+        var table = document.getElementById('person')
+        $("#person").html('');
+        for (var i = 0; i < data.length; i++) {
+          var row = `<tr class="row_data">
+                                            <td>${data[i].name}</td>
+                                            <td>${data[i].age}</td>
+                                            <td>
+                                              <input type="button" id="update" value="update" class="update" onclick="update({{data}})">
+                                              
+                                              <input type="button" value="Delete" class="delete" onclick="delete({{data}})">
+                                            </td>
+                            </tr>`
+          table.innerHTML += row
+        }
+        
+        $(".delete").click(function(){
+          //var el = this;
+          //var deleteid =$(this).data('id');
+          //console.log("helllllllll",event)
+          //var formData = $(".row_data").val()
+          console.log(data)
+          //console.log(deleteid)
+          var ageData = {age:data[0].age}              
+          $.ajax({
+            type: "DELETE", 
+            url: "http://localhost:5000/deletePersonData",
+            data : JSON.stringify(ageData),
+            contentType: "application/json",
+          });
+        })  
+      
+        $(".update").click(function(){
+          //var el = this;
+          //var deleteid =$(this).data('id');
+          //console.log("helllllllll",event)
+          //var formData = $(".row_data").val()
+          console.log(data)
+          //console.log(deleteid)
+          var name= "Raju";
+          var age = 22;
+          var ageData = {name:name ,age:age }              
+          $.ajax({
+            type: "PUT", 
+            url: "http://localhost:5000/updatePersonData",
+            data : JSON.stringify(ageData),
+            contentType: "application/json",
+          });
+        })  
+      
+        
+        $('#searchbutton').onclick(function(){
+        
+          // Search text
+          var text = $(this).val();
+          console.log(text)
+        
+          // Hide all content class element
+          $('.content').hide();
+
+          // Search and show
+          $('.content:contains("'+text+'")').show();
+        
+        });
+        
+        
+
+      
+        
+      
+      
+      
+      
+      
+      
+      }
+      
+      
+
+
+     
+      event.preventDefault();
+    });
+
+    
+});
+      
+
+
+    
+     
+
+      
+
+  
+
+
+</script>
